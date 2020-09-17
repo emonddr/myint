@@ -1,4 +1,8 @@
-import {Context, invokeMethod} from '@loopback/core';
+import {
+  Context,
+  invokeMethod,
+  createProxyWithInterceptors,
+} from '@loopback/core';
 import {ApplicationConfig, MyIntApp} from './application';
 import {UpperCaser} from './utilities';
 export * from './application';
@@ -12,6 +16,10 @@ export async function main(options: ApplicationConfig = {}) {
   console.log(`Server is running at ${url}`);
   console.log(`Try ${url}/ping`);
 
+  /**
+   * Different ways of calling the UpperCaser utility class
+   * and seeing the interceptors working.
+   */
   const ucr: UpperCaser = new UpperCaser();
 
   //const ctx: Context = app;
@@ -23,6 +31,23 @@ export async function main(options: ApplicationConfig = {}) {
 
   upperCasedString = await invokeMethod(ucr, 'doIt2', ctx, ['some string #2']);
   console.log(`\nupperCasedString2:${upperCasedString}\n`);
+
+  const proxy = createProxyWithInterceptors(ucr, ctx);
+  upperCasedString = await proxy.doIt('some string #3');
+  console.log(`\nupperCasedString3:${upperCasedString}\n`);
+
+  upperCasedString = await proxy.doIt2('some string #4');
+  console.log(`\nupperCasedString4:${upperCasedString}\n`);
+
+  const proxy2 = (await ctx.get<UpperCaser>('uppercaser', {
+    asProxyWithInterceptors: true,
+  })) as UpperCaser;
+
+  upperCasedString = await proxy2.doIt('some string #5');
+  console.log(`\nupperCasedString3:${upperCasedString}\n`);
+
+  upperCasedString = await proxy2.doIt2('some string #6');
+  console.log(`\nupperCasedString4:${upperCasedString}\n`);
 
   return app;
 }

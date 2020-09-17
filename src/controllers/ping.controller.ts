@@ -30,11 +30,15 @@ const PING_RESPONSE: ResponseObject = {
 
 /**
  * A simple controller to bounce back http requests
+ *
+ * It injects the UpperCaser utility class and uses the special flag
+ * to enable the interceptors on that class
  */
 export class PingController {
   constructor(
     @inject(RestBindings.Http.REQUEST) private req: Request,
-    @inject('uppercaser') private ucr: UpperCaser,
+    @inject('uppercaser', {asProxyWithInterceptors: true})
+    private ucr: UpperCaser,
   ) {}
 
   // Map to `GET /ping`

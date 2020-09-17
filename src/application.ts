@@ -43,8 +43,6 @@ export class MyIntApp extends BootMixin(
       },
     };
 
-    const binding = this.bind('uppercaser')
-      .toClass(UpperCaser)
-      .inScope(BindingScope.SINGLETON);
+    this.bind('uppercaser').toClass(UpperCaser).inScope(BindingScope.SINGLETON);
   }
 }
